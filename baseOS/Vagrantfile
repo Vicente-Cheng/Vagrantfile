@@ -1,0 +1,35 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+    config.vm.provider :libvirt do |libvirt|
+        libvirt.driver = "kvm"
+        libvirt.cpus = 8
+        libvirt.memory = 16384
+    end
+
+    config.vm.define "ubuntu20.04" do |ubuntu|
+        ubuntu.vm.hostname = "freeze-ubuntu-workspace"
+        ubuntu.vm.box = "generic/ubuntu2004"
+        ubuntu.vm.box_version = "4.0.2"
+        ubuntu.vm.provision:shell, inline: <<-SHELL
+            echo "root:p@ssw0rd" | sudo chpasswd
+            sudo timedatectl set-timezone Asia/Taipei
+        SHELL
+
+        ubuntu.vm.provision:shell, path: "bootstrap_ubuntu.sh"
+    end
+
+    config.vm.define "centos7" do |centos7|
+        centos7.vm.hostname = "freeze-centos7-workspace"
+        centos7.vm.box = "generic/centos7"
+        centos7.vm.box_version = "4.0.2"
+        centos7.vm.provision:shell, inline: <<-SHELL
+            echo "root:p@ssw0rd" | sudo chpasswd
+            sudo timedatectl set-timezone Asia/Taipei
+        SHELL
+        #centos7.vm.provision:shell, path: "bootstrap_centos7.sh"
+    end
+end
